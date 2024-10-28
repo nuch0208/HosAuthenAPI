@@ -21,18 +21,18 @@ namespace HosAuthenAPI.Controllers
             _context = context;
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<PatientDto> GetHn(string id)
+        [HttpGet("{Cid}")]
+        public ActionResult<PatientDto> GetHn(string Cid)
         {
             var patient = _context.Patients
-                .Where(a => a.Cid == id)
+                .Where(a => a.Cid == Cid)
                 .Select(a => new PatientDto
                 {
                     Hn = a.Hn,
                     Fname = a.Fname,
                     Lname = a.Lname,
                     Pname = a.Pname,
-                    Birthday = a.Birthday
+                    // Birthday = a.Birthday
                 })
                 .FirstOrDefault();
 
@@ -111,11 +111,6 @@ namespace HosAuthenAPI.Controllers
                 join v in _context.Ovsts on o.Hn equals v.Hn
                 join k in _context.Kskdepartments on o.Depcode equals k.Depcode
                 where o.Nextdate == dateOnly // Filter for current date
-            //    select new
-            //      {
-            //         o.OappId, o.Hn, o.Doctor, d.Name, o.Vstdate, o.Nextdate, o.Vn ,k.Department , ptname = $"{p.Pname} {p.Fname} {p.Lname}", p.Cid
-                    
-            //      };
                 group new { o, p, d, k, v } by new
                 {
                     o.OappId,
@@ -128,7 +123,8 @@ namespace HosAuthenAPI.Controllers
                     o.Vn,
                     k.Department,
                     p.Pname,p.Fname,p.Lname,
-                    p.Cid
+                    p.Cid,
+                    p.Hometel
                 } into grouped
                 select new
                 {
@@ -144,31 +140,65 @@ namespace HosAuthenAPI.Controllers
                     grouped.Key.Pname,
                     grouped.Key.Fname,
                     grouped.Key.Lname,
-                    grouped.Key.Cid
+                    grouped.Key.Cid,
+                    grouped.Key.Hometel
                 };
 
                     
-            return Json(query.Take(100));
+            return Json(query);
         }
 
-        [HttpGet("App/{ById}")]
-        public ActionResult GetAppointmentsฺByIdAsync(string ById)
+        [HttpGet("/app/{ById}")]
+        public async Task<ActionResult<PatientDto>> GetAppointmentsByIdAsync(string ById)
         {
             DateOnly dateOnly = DateOnly.FromDateTime(DateTime.Now);
-             var query = 
+            
+            var query = 
                 from o in _context.Oapps
-                join p in _context.Patients on  o.Hn equals p.Hn
+                join p in _context.Patients on o.Hn equals p.Hn
                 join c in _context.Clinics on o.Clinic equals c.Clinic1
-                join d in _context.Doctors on o.Doctor equals d.Code
                 join v in _context.Ovsts on o.Hn equals v.Hn
-                // where o.Nextdate == dateOnly // Filter for current date
-                where p.Hn == ById && o.Nextdate == dateOnly
-               select new
-                 {
-                    o.OappId, o.Doctor, d.Name, v. Vstdate, o.Nextdate,o.Spclty , ptname = $"{p.Pname} {p.Fname} {p.Lname}",
+                join d in _context.Doctors on o.Doctor equals d.Code
+                join k in _context.Kskdepartments on o.Depcode equals k.Depcode
+                where p.Cid == ById && o.Nextdate == dateOnly
+                group new { o, p, d, k } by new
+                {
+                    o.OappId,
+                    o.Hn,
+                    o.Doctor,
+                    d.Name,
+                    o.Vstdate,
+                    o.Nextdate,
+                    o.Nexttime,
+                    o.Vn,
+                    k.Department,
+                    p.Pname,
+                    p.Fname,
+                    p.Lname,
+                    p.Cid,
+                    p.Hometel,
+                    p.Birthday
+                } into grouped
+                select new PatientDto // Change this to your PatientDto structure
+                {
+                    OappId = grouped.Key.OappId,
+                    Hn = grouped.Key.Hn,
+                    Doctor = grouped.Key.Doctor,
+                    DoctorName = grouped.Key.Name,
+                    Vstdate = grouped.Key.Vstdate,
+                    NextDate = grouped.Key.Nextdate,
+                    NextTime = grouped.Key.Nexttime,
+                    Vn = grouped.Key.Vn,
+                    Department = grouped.Key.Department,
+                    Pname = grouped.Key.Pname,
+                    Fname = grouped.Key.Fname,
+                    Lname = grouped.Key.Lname,
+                    Cid = grouped.Key.Cid,
+                    Hometel = grouped.Key.Hometel,
                     
-                 };
-             return Json(query.Take(5));
+                };
+
+            return Ok(query.FirstOrDefault());
         }
 
     }
