@@ -101,7 +101,7 @@ namespace HosAuthenAPI.Controllers
         }
 
         [HttpGet("Appoint")]
-        public ActionResult GetAppointmentsAsync()
+        public async Task<ActionResult> GetAppointmentsAsync()
         {
             DateOnly dateOnly = DateOnly.FromDateTime(DateTime.Now);
             var query =
@@ -127,7 +127,7 @@ namespace HosAuthenAPI.Controllers
                     o.Nexttime,
                     o.Vn,
                     k.Department,
-                    PatientName = $"{p.Pname} {p.Fname} {p.Lname}",
+                    p.Pname,p.Fname,p.Lname,
                     p.Cid
                 } into grouped
                 select new
@@ -141,7 +141,9 @@ namespace HosAuthenAPI.Controllers
                     grouped.Key.Nexttime,
                     grouped.Key.Vn,
                     grouped.Key.Department,
-                    grouped.Key.PatientName,
+                    grouped.Key.Pname,
+                    grouped.Key.Fname,
+                    grouped.Key.Lname,
                     grouped.Key.Cid
                 };
 
