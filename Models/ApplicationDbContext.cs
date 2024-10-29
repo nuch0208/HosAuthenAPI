@@ -50,6 +50,8 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<PttypeCheckStatus> PttypeCheckStatuses { get; set; }
 
+    public virtual DbSet<Pttypeno> Pttypenos { get; set; }
+
     public virtual DbSet<Serial> Serials { get; set; }
 
     public virtual DbSet<Spclty> Spclties { get; set; }
@@ -59,6 +61,7 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<Ward> Wards { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseMySql("server=172.16.5.39;port=3306;database=hos;userid=coachnrm;password=his_api_slave", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.1.37-mariadb"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -774,8 +777,7 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("hosptype");
             entity.Property(e => e.Moopart)
-                .HasMaxLength(2)
-                .IsFixedLength()
+                .HasMaxLength(3)
                 .HasColumnName("moopart");
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
@@ -783,6 +785,9 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.PoCode)
                 .HasMaxLength(5)
                 .HasColumnName("po_code");
+            entity.Property(e => e.ProvinceName)
+                .HasMaxLength(60)
+                .HasColumnName("province_name");
             entity.Property(e => e.SssCode)
                 .HasMaxLength(12)
                 .HasColumnName("sss_code");
@@ -793,6 +798,9 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(2)
                 .IsFixedLength()
                 .HasColumnName("tmbpart");
+            entity.Property(e => e.Zone)
+                .HasMaxLength(2)
+                .HasColumnName("zone");
         });
 
         modelBuilder.Entity<Kskdepartment>(entity =>
@@ -1745,6 +1753,9 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.PasswordRecheckDate)
                 .HasColumnType("int(11)")
                 .HasColumnName("password_recheck_date");
+            entity.Property(e => e.PasswordText)
+                .HasMaxLength(32)
+                .HasColumnName("password_text");
             entity.Property(e => e.PcuUser)
                 .HasMaxLength(1)
                 .IsFixedLength()
@@ -2434,6 +2445,9 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(1)
                 .IsFixedLength()
                 .HasColumnName("type_area");
+            entity.Property(e => e.Vid)
+                .HasMaxLength(8)
+                .HasColumnName("vid");
             entity.Property(e => e.WorkAddr1)
                 .HasMaxLength(230)
                 .HasColumnName("work_addr");
@@ -2590,7 +2604,6 @@ public partial class ApplicationDbContext : DbContext
                 .HasColumnName("fee_code_paidst");
             entity.Property(e => e.FinanceRoundMoney)
                 .HasMaxLength(1)
-                .IsFixedLength()
                 .HasColumnName("finance_round_money");
             entity.Property(e => e.GrouperRelease)
                 .HasMaxLength(5)
@@ -2617,7 +2630,6 @@ public partial class ApplicationDbContext : DbContext
                 .HasColumnName("in_region");
             entity.Property(e => e.IncRoundMoney)
                 .HasMaxLength(1)
-                .IsFixedLength()
                 .HasColumnName("inc_round_money");
             entity.Property(e => e.IpdBedcharge24)
                 .HasMaxLength(1)
@@ -2682,6 +2694,9 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(1)
                 .IsFixedLength()
                 .HasColumnName("print_presc_ned");
+            entity.Property(e => e.PttypeEclaimId)
+                .HasMaxLength(2)
+                .HasColumnName("pttype_eclaim_id");
             entity.Property(e => e.PttypeGroup1)
                 .HasMaxLength(3)
                 .IsFixedLength()
@@ -2726,7 +2741,6 @@ public partial class ApplicationDbContext : DbContext
                 .HasColumnName("requirecode");
             entity.Property(e => e.RoundMoney)
                 .HasMaxLength(1)
-                .IsFixedLength()
                 .HasColumnName("round_money");
             entity.Property(e => e.RxPayDebitTr)
                 .HasMaxLength(1)
@@ -2788,6 +2802,46 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.PttypeCheckStatusName)
                 .HasMaxLength(200)
                 .HasColumnName("pttype_check_status_name");
+        });
+
+        modelBuilder.Entity<Pttypeno>(entity =>
+        {
+            entity.HasKey(e => new { e.Hn, e.Pttype })
+                .HasName("PRIMARY")
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+
+            entity.ToTable("pttypeno");
+
+            entity.HasIndex(e => e.Hn, "hn");
+
+            entity.HasIndex(e => e.HosGuid, "ix_hos_guid");
+
+            entity.HasIndex(e => e.HosGuidExt, "ix_hos_guid_ext");
+
+            entity.Property(e => e.Hn)
+                .HasMaxLength(9)
+                .HasColumnName("hn");
+            entity.Property(e => e.Pttype)
+                .HasMaxLength(2)
+                .IsFixedLength()
+                .HasColumnName("pttype");
+            entity.Property(e => e.Begindate).HasColumnName("begindate");
+            entity.Property(e => e.Expiredate).HasColumnName("expiredate");
+            entity.Property(e => e.HosGuid)
+                .HasMaxLength(38)
+                .HasColumnName("hos_guid");
+            entity.Property(e => e.HosGuidExt)
+                .HasMaxLength(64)
+                .HasColumnName("hos_guid_ext");
+            entity.Property(e => e.Hospmain)
+                .HasMaxLength(5)
+                .HasColumnName("hospmain");
+            entity.Property(e => e.Hospsub)
+                .HasMaxLength(5)
+                .HasColumnName("hospsub");
+            entity.Property(e => e.Pttypeno1)
+                .HasMaxLength(20)
+                .HasColumnName("pttypeno");
         });
 
         modelBuilder.Entity<Serial>(entity =>
@@ -2909,9 +2963,15 @@ public partial class ApplicationDbContext : DbContext
 
             entity.ToTable("visit_pttype");
 
+            entity.HasIndex(e => e.AuthCode, "auth_code");
+
+            entity.HasIndex(e => e.ClaimCode, "claim_code");
+
             entity.HasIndex(e => e.HosGuid, "ix_hos_guid");
 
             entity.HasIndex(e => e.HosGuidExt, "ix_hos_guid_ext");
+
+            entity.HasIndex(e => e.ProjectCode, "project_code");
 
             entity.HasIndex(e => e.Pttype, "pttype");
 
@@ -2927,6 +2987,9 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.AuthCode)
                 .HasMaxLength(15)
                 .HasColumnName("auth_code");
+            entity.Property(e => e.AuthDateTime)
+                .HasColumnType("datetime")
+                .HasColumnName("Auth_DateTime");
             entity.Property(e => e.BeginDate).HasColumnName("begin_date");
             entity.Property(e => e.CheckLimitHour)
                 .HasMaxLength(1)

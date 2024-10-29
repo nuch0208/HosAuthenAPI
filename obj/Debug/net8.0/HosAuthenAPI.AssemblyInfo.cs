@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HosAuthenAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2f2b6ac093644525ac8a0fb5186f911bf475174d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ee1e298b56c8ad97a5c78e9db1dd29c033f99796")]
 [assembly: System.Reflection.AssemblyProductAttribute("HosAuthenAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HosAuthenAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

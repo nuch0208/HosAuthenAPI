@@ -206,4 +206,6 @@ public partial class Patient
     public DateOnly? CardDestroyDate { get; set; }
 
     public string? G6pd { get; set; }
+
+    public string? Vid { get; set; }
 }

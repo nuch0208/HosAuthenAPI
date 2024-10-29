@@ -94,4 +94,6 @@ public partial class Opduser
     public string? MophAccPassword { get; set; }
 
     public string? SendMophOtp { get; set; }
+
+    public string? PasswordText { get; set; }
 }

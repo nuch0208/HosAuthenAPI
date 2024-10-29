@@ -90,4 +90,6 @@ public partial class VisitPttype
     public string? RequestFunds { get; set; }
 
     public string? NhsoUcaeTypeCode { get; set; }
+
+    public DateTime? AuthDateTime { get; set; }
 }

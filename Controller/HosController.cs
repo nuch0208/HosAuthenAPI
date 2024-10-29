@@ -201,5 +201,21 @@ namespace HosAuthenAPI.Controllers
             return Ok(query.FirstOrDefault());
         }
 
+        [HttpGet("/Pt/{Hn}")]
+        public async Task<ActionResult<PttypenoDto>> GetPttypeAsync(string Hn)
+        {
+            var query = 
+                from o in _context.Pttypenos
+                join p in _context.Patients on o.Hn equals p.Hn
+                join pt in _context.Pttypes on o.Pttype equals pt.Pttype1
+                join h in _context.Hospcodes on o.Hospmain equals h.Hospcode1
+                where o.Hn == Hn && o.Pttype == p.Pttype
+            select new 
+                {
+                    o.Hn, o.Pttype, pt.Name, o.Begindate, o.Expiredate, o.Hospmain, Hname = h.Name
+                };
+
+            return Ok(query.FirstOrDefault());
+        }
     }
 }

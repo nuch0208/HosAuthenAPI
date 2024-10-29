@@ -156,4 +156,6 @@ public partial class Pttype
     public string? CheckNhsoAuth { get; set; }
 
     public int? PttypeUppTypeId { get; set; }
+
+    public string? PttypeEclaimId { get; set; }
 }

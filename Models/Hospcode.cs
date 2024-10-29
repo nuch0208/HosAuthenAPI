@@ -44,4 +44,8 @@ public partial class Hospcode
     public string? Addrpart { get; set; }
 
     public string? AreaCode { get; set; }
+
+    public string? ProvinceName { get; set; }
+
+    public string? Zone { get; set; }
 }
