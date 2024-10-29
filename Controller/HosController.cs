@@ -217,5 +217,6 @@ namespace HosAuthenAPI.Controllers
 
             return Ok(query.FirstOrDefault());
         }
+        
     }
 }
