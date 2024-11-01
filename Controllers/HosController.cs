@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using HosAuthenAPI.Services;
+using System.Globalization;
 
 namespace HosAuthenAPI.Controllers
 {
@@ -16,9 +18,11 @@ namespace HosAuthenAPI.Controllers
     public class HosController : Controller
     {
         private readonly ApplicationDbContext _context;
-        public HosController(ApplicationDbContext context)
+        private readonly GetSerial _service;
+        public HosController(ApplicationDbContext context ,GetSerial service)
         {
             _context = context;
+            _service = service;
         }
 
         [HttpGet("{Cid}")]
@@ -217,6 +221,59 @@ namespace HosAuthenAPI.Controllers
 
             return Ok(query.FirstOrDefault());
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateOpenVisit(OvstDto ovstDto)
+        {
+            // var otherClient = db.Ovsts.FirstOrDefault(c => c.HosGuid == clientDto.hosGuid);
+            // if (otherClient != null)
+            // {
+            //     ModelState.AddModelError("HosGuid", "The HosGuid is already used");
+            //     var validation = new ValidationProblemDetails(ModelState);
+            //     return BadRequest(validation);
+            // }
+
+            var _Oqueue = await _service.GetSerialNumber();
+
+            var ovst = new Ovst
+            {
+                HosGuid = "{"+Guid.NewGuid().ToString()+"}",
+                Vn = DateTime.Now.ToString("yyMMddHHmmss", new CultureInfo("th-TH")),
+                Hn = ovstDto.Hn,
+                Vstdate = DateOnly.FromDateTime(DateTime.Now),
+                Vsttime = TimeOnly.FromDateTime(DateTime.Now),
+                Doctor = ovstDto.Doctor,
+                Hospmain = ovstDto.Hospmain,
+                Hospsub = ovstDto.Hospsub,
+                Oqueue = Convert.ToInt32(_Oqueue),
+                Ovstist = ovstDto.Ovstist,
+                Ovstost = ovstDto.Ovstost,
+                Pttype = ovstDto.Pttype,
+                Pttypeno = ovstDto.Pttypeno,
+                Rfrocs = ovstDto.Rfrocs,
+                Spclty = ovstDto.Spclty,
+                Hcode = "10734",
+                CurDep = ovstDto.CurDep,
+                CurDepBusy = "N",
+                LastDep = ovstDto.LastDep,
+                PtSubtype = 0,
+                MainDep = ovstDto.MainDep,
+                MainDepQueue = 0,
+                VisitType = ovstDto.VisitType,
+                NodeId = ovstDto.NodeId,
+                Waiting = "Y",
+                HasInsurance = ovstDto.HasInsurance,
+                Staff = ovstDto.Staff,
+                PtPriority = 0,
+                OvstKey = "9564AB24894CF188CC14EB2D81857600",
+            };
+
+            _context.Ovsts.Add(ovst);
+            _context.SaveChanges();
+
+            return Ok(ovst);
+        }
+
         
     }
 }
